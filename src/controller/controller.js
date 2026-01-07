@@ -8,7 +8,8 @@ export async function SSE(req, res) {
 
   let count = 0;
   const IntervalId = setInterval(() => {
-    res.write(`data: ${count}\n\n`);
+    res.write(`event: counter\n`);
+    res.write(`data: ${JSON.stringify({ count })}\n\n`);
     count++;
   }, 2000);
 
