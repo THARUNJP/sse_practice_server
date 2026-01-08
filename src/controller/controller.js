@@ -13,10 +13,17 @@ export async function SSE(req, res) {
     count++;
   }, 2000);
 
+  const heartIntervalId = setInterval(() => {
+    res.write(`event: heartbeat\n`);
+    res.write(`data: alive\n\n`);
+    count++;
+  }, 5000);
+
   // this writes to all connected clients
 
   req.on("close", () => {
     clearInterval(IntervalId);
+    clearInterval(heartIntervalId);
     res.end();
   });
 }
