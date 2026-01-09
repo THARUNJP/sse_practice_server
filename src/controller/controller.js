@@ -6,8 +6,11 @@ export async function SSE(req, res) {
   res.setHeader("Connection", "keep-alive");
   // res.write(`data: Connected to server\n\n`);
 
-  let count = 0;
+ const lastId = parseInt(req.headers["last-event-id"], 10) || 0;
+  let count = lastId + 1;
+
   const IntervalId = setInterval(() => {
+    res.write(`id: ${count}\n`);
     res.write(`event: counter\n`);
     res.write(`data: ${JSON.stringify({ count })}\n\n`);
     count++;
