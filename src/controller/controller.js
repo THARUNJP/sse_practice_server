@@ -37,7 +37,7 @@ export async function SSE(req, res) {
 
 export async function getItems(req, res) {
   try {
-    const { page, limit } = req.query;
+    const { page = 1, limit = 10} = req.query;
     const offset = (page - 1) * 10;
     const query = `SELECT name, category, brand, quantity, price FROM items WHERE is_active = $1 OFFSET $2 LIMIT $3`;
     const { rows } = await executeQuery(query, [true, offset, limit]);
