@@ -9,6 +9,8 @@ app.use(express.json());
 
 app.get("/events", SSE);
 
+app.get("/",()=>{})
+
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
