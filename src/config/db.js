@@ -1,6 +1,7 @@
+import { configDotenv } from "dotenv";
 import pkg from "pg";
 const { Pool } = pkg;
-
+configDotenv();
 // Create a singleton pool
 const pool = new Pool({
   host: process.env.DB_HOST,
