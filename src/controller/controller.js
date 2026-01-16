@@ -1,3 +1,5 @@
+import executeQuery from "../config/db";
+
 const clients = new Map(); // to keep track of each clients
 let count = 0;
 export async function SSE(req, res) {
@@ -19,7 +21,6 @@ export async function SSE(req, res) {
     count++;
   }, 2000);
 
-
   const heartIntervalId = setInterval(() => {
     res.write(`event: heartbeat\n`);
     res.write(`data: alive\n\n`);
@@ -32,4 +33,23 @@ export async function SSE(req, res) {
     clearInterval(heartIntervalId);
     res.end();
   });
+}
+
+export async function getItems(req, res) {
+  try {
+    const { page, limit } = req.query;
+    const offset = (page - 1) * 10;
+    const query = `SELECT name, category, brand, quantity, price FROM items WHERE is_active = $1 OFFSET $2 LIMIT $3`;
+    const { rows } = await executeQuery(query, [true, offset, limit]);
+    return res.status(200).json({
+      status: true,
+      data: rows,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: false,
+      message: "Internal status error",
+      error: err.message,
+    });
+  }
 }
