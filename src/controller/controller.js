@@ -1,4 +1,4 @@
-import executeQuery from "../config/db";
+import executeQuery from "../config/db.js";
 
 const clients = new Map(); // to keep track of each clients
 let count = 0;
