@@ -37,20 +37,34 @@ export async function SSE(req, res) {
 
 export async function getItems(req, res) {
   try {
-    console.log("triggers");
-    
-    const { page = 1, limit = 10} = req.query;
-    const offset = (page - 1) * 10;
-    const query = `SELECT id, name, category, brand, quantity, price FROM items WHERE is_active = $1 OFFSET $2 LIMIT $3`;
-    const { rows } = await executeQuery(query, [true, offset, limit]);
+    const { cursor = 0, limit = 10 } = req.query;
+
+    const query = `
+        SELECT id, name, category, brand, quantity, price
+        FROM items
+        WHERE is_active = $1
+          AND id > $2
+        ORDER BY id ASC
+        LIMIT $3
+      `;
+
+    const values = [true, cursor, limit];
+
+    const { rows } = await executeQuery(query, values);
+
+    // Next cursor
+    const nextCursor = rows.length > 0 ? rows[rows.length - 1].id : null;
+
     return res.status(200).json({
       status: true,
       data: rows,
+      nextCursor,
+      hasMore: rows.length === Number(limit),
     });
   } catch (err) {
     return res.status(500).json({
       status: false,
-      message: "Internal status error",
+      message: "Internal server error",
       error: err.message,
     });
   }
